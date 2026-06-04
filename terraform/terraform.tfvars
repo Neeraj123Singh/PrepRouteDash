@@ -1,0 +1,5 @@
+aws_region   = "ap-south-1"
+project_name = "preproute-test-mgmt"
+environment  = "staging"
+domain_name  = ""
+api_base_url = "/api"

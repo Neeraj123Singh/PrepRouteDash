@@ -1,0 +1,20 @@
+.svg {
+  display: block;
+  flex-shrink: 0;
+  max-width: 100%;
+}
+
+.sm {
+  width: 98px;
+  height: auto;
+}
+
+.md {
+  width: 126px;
+  height: auto;
+}
+
+.lg {
+  width: 168px;
+  height: auto;
+}
