@@ -2,14 +2,59 @@
 
 A 5-page React application for creating, managing, and publishing MCQ tests. Built as part of the Preproute Frontend Developer evaluation task.
 
-## Live Demo
+## Live Demo (AWS)
 
-Deploy to [Vercel](https://vercel.com) or [Netlify](https://netlify.com) with a same-origin `/api` rewrite/proxy to staging, or ensure the API allows your origin via CORS.
+**https://d33bxno0xyvaq6.cloudfront.net**
+
+Login: `vedant-admin` / `vedant123`
+
+Deployed with **S3 + CloudFront** (Terraform). `/api` is proxied to the staging Railway backend on the same origin (no browser CORS).
+
+### Deploy to AWS (one command)
+
+**Prerequisites:** [AWS CLI](https://aws.amazon.com/cli/) configured (`aws configure`), [Terraform](https://www.terraform.io/downloads) >= 1.5, Node.js 22+.
 
 ```bash
-npm run build
-# Deploy the `dist` folder
+chmod +x scripts/deploy-aws.sh scripts/print-submission.sh
+./scripts/deploy-aws.sh
 ```
+
+The script will:
+
+1. Run `npm ci` and `npm run build` with `VITE_API_BASE_URL=/api`
+2. Run `terraform init` and `terraform apply` (S3 upload + CloudFront)
+3. Print the live **CloudFront URL**
+4. Invalidate the CloudFront cache so updates are visible quickly
+
+**Options:**
+
+```bash
+./scripts/deploy-aws.sh --skip-build      # reuse existing dist/ (faster redeploy)
+./scripts/deploy-aws.sh --no-invalidate   # skip cache invalidation
+./scripts/deploy-aws.sh --help
+```
+
+**Manual deploy** (same result):
+
+```bash
+VITE_API_BASE_URL=/api npm run build
+cd terraform
+cp terraform.tfvars.example terraform.tfvars   # first time only
+terraform init && terraform apply
+terraform output cloudfront_url
+```
+
+See [`terraform/README.md`](terraform/README.md) for infrastructure details.
+
+### Submission (video + form text)
+
+| Resource | Path |
+|----------|------|
+| Google Form copy-paste answers | [`docs/SUBMISSION_FORM.md`](docs/SUBMISSION_FORM.md) |
+| Video recording script (~8–12 min) | [`docs/VIDEO_WALKTHROUGH_SCRIPT.md`](docs/VIDEO_WALKTHROUGH_SCRIPT.md) |
+| Print deploy URL + technical decisions | `./scripts/print-submission.sh` |
+
+[Preproute evaluation form](https://forms.gle/WmZbBQZiLfo8WNn79)
 
 ## Getting Started
 
@@ -90,17 +135,6 @@ docker compose up --build
 docker compose --profile test run test
 ```
 
-## Terraform (AWS S3 + CloudFront)
-
-See [`terraform/README.md`](terraform/README.md).
-
-```bash
-cd terraform
-cp terraform.tfvars.example terraform.tfvars
-terraform init && terraform apply
-terraform output cloudfront_url
-```
-
 ## Submission checklist
 
 See [`SUBMISSION_CHECKLIST.md`](SUBMISSION_CHECKLIST.md) for evaluation criteria mapping and pre-submit tasks.
@@ -109,6 +143,8 @@ See [`SUBMISSION_CHECKLIST.md`](SUBMISSION_CHECKLIST.md) for evaluation criteria
 
 | Command | Description |
 |---------|-------------|
+| `./scripts/deploy-aws.sh` | Build + deploy to AWS (S3 + CloudFront) |
+| `./scripts/print-submission.sh` | Print form text (URL, technical decisions) |
 | `npm run dev` | Start dev server |
 | `npm run build` | Production build |
 | `npm run preview` | Preview production build |
@@ -128,9 +164,9 @@ src/
 ## Deliverables Checklist
 
 - [x] GitHub repository (this project)
-- [ ] Deployed web application (Vercel/Netlify — see above)
-- [ ] Task walkthrough video
-- [x] Technical decisions (this README)
+- [x] Deployed web application — https://d33bxno0xyvaq6.cloudfront.net
+- [ ] Task walkthrough video — record with [`docs/VIDEO_WALKTHROUGH_SCRIPT.md`](docs/VIDEO_WALKTHROUGH_SCRIPT.md), submit link via [`docs/SUBMISSION_FORM.md`](docs/SUBMISSION_FORM.md)
+- [x] Technical decisions — README + `./scripts/print-submission.sh`
 
 ## Author Notes
 

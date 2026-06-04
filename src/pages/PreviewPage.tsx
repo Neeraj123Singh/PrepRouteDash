@@ -132,7 +132,8 @@ export function PreviewPage() {
             </ScheduleField>
             <TimeField
               id="schedule-time"
-              label="Time (24h)"
+              label="Select Time"
+              placeholder="Select time"
               value={scheduleTime}
               onChange={setScheduleTime}
             />
@@ -171,7 +172,8 @@ export function PreviewPage() {
             </ScheduleField>
             <TimeField
               id="end-time"
-              label="End time (24h)"
+              label="Select End Time"
+              placeholder="Select End Time"
               value={endTime}
               onChange={setEndTime}
             />

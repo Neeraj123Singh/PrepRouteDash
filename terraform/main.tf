@@ -11,6 +11,14 @@ locals {
   }
 }
 
+data "aws_cloudfront_cache_policy" "caching_disabled" {
+  name = "Managed-CachingDisabled"
+}
+
+data "aws_cloudfront_origin_request_policy" "api_forward" {
+  name = "Managed-AllViewerExceptHostHeader"
+}
+
 # S3 bucket for static SPA assets
 resource "aws_s3_bucket" "frontend" {
   bucket = "${local.name_prefix}-frontend"
@@ -97,8 +105,8 @@ resource "aws_cloudfront_distribution" "frontend" {
     allowed_methods = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
     cached_methods  = ["GET", "HEAD", "OPTIONS"]
 
-    cache_policy_id          = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
-    origin_request_policy_id = "b5879487-d9bf-11e9-b4a3-3adba5164783"
+    cache_policy_id          = data.aws_cloudfront_cache_policy.caching_disabled.id
+    origin_request_policy_id = data.aws_cloudfront_origin_request_policy.api_forward.id
   }
 
   # SPA fallback: serve index.html for client-side routes
@@ -156,21 +164,6 @@ resource "aws_s3_bucket_policy" "frontend" {
   policy = data.aws_iam_policy_document.frontend_bucket.json
 }
 
-# Build and upload assets (requires Node.js on machine running terraform apply)
-resource "null_resource" "build_frontend" {
-  triggers = {
-    always_run = timestamp()
-  }
-
-  provisioner "local-exec" {
-    command = <<-EOT
-      cd ${path.module}/..
-      npm ci
-      VITE_API_BASE_URL=${var.api_base_url} npm run build
-    EOT
-  }
-}
-
 resource "aws_s3_object" "frontend_assets" {
   for_each = fileset("${path.module}/../dist", "**")
 
@@ -191,6 +184,4 @@ resource "aws_s3_object" "frontend_assets" {
     regex("\\.[^.]+$", each.value),
     "application/octet-stream"
   )
-
-  depends_on = [null_resource.build_frontend]
 }
