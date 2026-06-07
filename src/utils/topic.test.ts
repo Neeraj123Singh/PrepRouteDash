@@ -14,6 +14,11 @@ describe('resolveTopicId', () => {
   it('matches by id', () => {
     expect(resolveTopicId('t-2', topics)).toBe('t-2');
   });
+
+  it('passes through unknown UUID refs', () => {
+    const uuid = '5f67fccb-fcfc-4a68-baf0-635872554f32';
+    expect(resolveTopicId(uuid, topics)).toBe(uuid);
+  });
 });
 
 describe('resolveSubTopicId', () => {

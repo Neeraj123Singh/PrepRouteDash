@@ -13,13 +13,13 @@ export function resolveTopicId(
 ): string {
   if (!topicRef) return '';
   const ref = topicRef.trim();
-  if (UUID_RE.test(ref)) {
-    const byId = topics.find((t) => String(t.id) === ref);
-    return byId ? String(byId.id) : ref;
-  }
+  const byId = topics.find((t) => String(t.id) === ref);
+  if (byId) return String(byId.id);
   const refNorm = normalizeName(ref);
   const byName = topics.find((t) => normalizeName(t.name) === refNorm);
-  return byName ? String(byName.id) : '';
+  if (byName) return String(byName.id);
+  if (UUID_RE.test(ref)) return ref;
+  return '';
 }
 
 export function resolveSubTopicId(
@@ -28,11 +28,11 @@ export function resolveSubTopicId(
 ): string {
   if (!subTopicRef) return '';
   const ref = subTopicRef.trim();
-  if (UUID_RE.test(ref)) {
-    const byId = subTopics.find((st) => String(st.id) === ref);
-    return byId ? String(byId.id) : ref;
-  }
+  const byId = subTopics.find((st) => String(st.id) === ref);
+  if (byId) return String(byId.id);
   const refNorm = normalizeName(ref);
   const byName = subTopics.find((st) => normalizeName(st.name) === refNorm);
-  return byName ? String(byName.id) : '';
+  if (byName) return String(byName.id);
+  if (UUID_RE.test(ref)) return ref;
+  return '';
 }

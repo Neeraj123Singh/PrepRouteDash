@@ -112,9 +112,9 @@ Evaluation weights from the task brief. Use this before submitting via the [Goog
 | Deliverable | Status | Action |
 |-------------|--------|--------|
 | GitHub repository | ⬜ Pending | Push repo and add URL to form |
-| Deployed web app | ⬜ Pending | Vercel/Netlify **or** `terraform apply` / Docker on host |
-| Walkthrough video | ⬜ Pending | Record full flow after login works |
-| Technical decisions | ✅ | See `README.md` |
+| Deployed web app | ✅ Done | https://d33bxno0xyvaq6.cloudfront.net — `./scripts/deploy-aws.sh` |
+| Walkthrough video | ⬜ Pending | Script: `docs/VIDEO_WALKTHROUGH_SCRIPT.md` |
+| Technical decisions | ✅ | `docs/SUBMISSION_FORM.md` or `./scripts/print-submission.sh` |
 
 ---
 
@@ -131,8 +131,11 @@ docker compose up --build
 # Docker (run tests only)
 docker compose --profile test run test
 
-# Terraform (AWS)
-cd terraform && terraform init && terraform apply
+# AWS deploy (build + Terraform + cache invalidation)
+./scripts/deploy-aws.sh
+
+# Print Google Form text (URL + technical decisions)
+./scripts/print-submission.sh
 ```
 
 ---
